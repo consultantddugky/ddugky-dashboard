@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Sanction Orders</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f4f6f9;
+        }
+        .card {
+            border-radius: 12px;
+        }
+        th, td {
+            text-align: center;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+
+    <h2 class="text-center mb-4">Sanction Orders List</h2>
+
+    <div class="card shadow p-4">
+
+        {% if orders %}
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>PIA Name</th>
+                    <th>Sanction Order No</th>
+                    <th>Sector</th>
+                    <th>Job Role</th>
+                    <th>Total</th>
+                    <th>SC</th>
+                    <th>ST</th>
+                    <th>Others</th>
+                    <th>Women</th>
+                    <th>PwD</th>
+                    <th>Training Type</th>
+                    <th>Total Duration</th>
+                    <th>OJT Duration</th>
+
+            
+
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order[14] }}</td>   <!-- ✅ PIA NAME -->
+                    <td>{{ order[9] }}</td>   <!-- Order No -->
+                    <td>{{ order[13] }}</td>   <!-- Sector -->
+                    <td>{{ order[1] }}</td>   <!-- Job role -->
+                    <td>{{ order[2] }}</td>   <!-- Total -->
+                    <td>{{ order[3] }}</td>   <!-- Sc -->
+                    <td>{{ order[4] }}</td>   <!-- St -->
+                    <td>{{ order[5] }}</td>   <!-- Others -->
+                    <td>{{ order[6] }}</td>   <!-- women -->
+                    <td>{{ order[7] }}</td>    <!-- pwd -->
+                    <td>{{ order[8] }}</td>     <!-- Training type -->
+                    <td>{{ order[11] }}</td>
+                    <td>{{ order[12] }}</td>
+
+                    
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% else %}
+            <div class="alert alert-warning text-center">
+                No sanction orders found.
+            </div>
+        {% endif %}
+
+        <div class="text-end mt-3">
+            <a href="/dashboard" class="btn btn-secondary">Back</a>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

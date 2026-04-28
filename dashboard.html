@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+
+body {
+    background: linear-gradient(135deg, #eef2f7, #f8fbff);
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Bar Charts (slightly smaller) */
+.chart-box {
+    height:260px;
+    width:100%;
+}
+
+/* Bigger Pie Charts */
+.chart-pie {
+    height:220px !important;
+    width:220px !important;
+    margin:auto;
+}
+
+/* Sidebar */
+.sidebar {
+    height:100vh;
+    width:220px;
+    position:fixed;
+    background: linear-gradient(180deg,#1e293b,#0f172a);
+    color:white;
+    padding-top:20px;
+}
+
+.sidebar a {
+    color:#cbd5e1;
+    display:block;
+    padding:10px 20px;
+    text-decoration:none;
+    transition:0.3s;
+}
+.sidebar a:hover {
+    background:#334155;
+    color:white;
+}
+
+/* Content */
+.content {
+    margin-left:230px;
+    padding:20px;
+}
+
+/* Card */
+.card-stat {
+    border-radius: 16px;
+    padding: 20px;
+    color: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: 0.3s;
+}
+
+.card-stat:hover {
+    transform: translateY(-5px);
+}
+
+.stat-title {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: bold;
+}
+.kpi-card {
+    animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* KPI */
+.kpi {
+    padding:15px;
+    color:white;
+    border-radius:14px;
+}
+
+.kpi-card {
+    border-radius: 16px;
+    padding: 20px;
+    color: #fff;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.kpi-card:hover {
+    transform: translateY(-5px);
+}
+
+.kpi-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.kpi-card p {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.85;
+}
+
+.kpi-card h3 {
+    margin: 5px 0 0;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.kpi-icon {
+    font-size: 32px;
+    opacity: 0.8;
+}
+
+/* Color Variants */
+.primary { background: linear-gradient(135deg, #4F46E5, #6366F1); }
+.success { background: linear-gradient(135deg, #22C55E, #4ADE80); }
+.warning { background: linear-gradient(135deg, #F59E0B, #FBBF24); }
+.danger  { background: linear-gradient(135deg, #EF4444, #F87171); }
+
+/* Chart Sizes */
+.chart-box {
+    height:300px;
+    width:100%;
+}
+.chart-box {
+    background: #fff;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.small-bar {
+    height: 250px;   /* reduced from large */
+}
+
+.chart-small {
+    height:150px;
+    max-width:100%;
+    margin:auto;
+}
+
+/* Content */
+.content {
+    margin-left:230px;
+    padding:20px;
+    transition: all 0.3s ease;
+    width: calc(100% - 230px);
+}
+
+.chat-open {
+    width: calc(100% - 580px);
+}
+
+h5 { font-weight:600; }
+h6 { font-weight:500; text-align:center; }
+
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+    <a href="/dashboard">Menu</a>
+    <hr class="bg-light">
+
+    <h6 class="px-3">PIA</h6>
+    <a href="/add_pia">Add PIA</a>
+    <a href="/add_pia_staff">PIA Staff</a>
+
+    <h6 class="px-3 mt-3">Sanction</h6>
+    <a href="/add_sanction_order">Sanction Order</a>
+    <a href="/view_sanction_orders">View Sanction Orders</a>
+
+    <h6 class="px-3 mt-3">Operations</h6>
+    <a href="/add_batch">Batch</a>
+    <a href="/add_candidate">Candidate</a>
+</div>
+
+<div class="content" id="main-content">
+
+<h5 class="mb-4">📊 Dashboard Overview</h5>
+
+<!-- FILTER -->
+<form method="GET" action="/dashboard" class="mb-4">
+    <div class="row g-2">
+        <div class="col-md-4">
+            <select name="pia_prn" class="form-select shadow-sm">
+                <option value="">All PIAs</option>
+                {% for pia in pia_list %}
+                <option value="{{ pia[0] }}" {% if selected_pia == pia[0] %}selected{% endif %}>
+                    {{ pia[1] }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100 shadow-sm">Filter</button>
+        </div>
+
+        <div class="col-md-3">
+            <button type="button" class="btn btn-dark w-100 shadow-sm" onclick="viewDetails()">
+                View Details
+            </button>
+        </div>
+    </div>
+</form>
+
+<!-- KPI -->
+<div class="row g-4 mb-4">
+
+    <div class="col-md-3">
+        <div class="kpi-card primary">
+            <div class="kpi-content">
+                <div>
+                    <p>Total PIAs</p>
+                    <h3>{{ total_pias }}</h3>
+                </div>
+                <div class="kpi-icon">
+                    <i class="bi bi-building"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="kpi-card success">
+            <div class="kpi-content">
+                <div>
+                    <p>Total Batches</p>
+                    <h3>{{ total_batches }}</h3>
+                </div>
+                <div class="kpi-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="kpi-card warning">
+            <div class="kpi-content">
+                <div>
+                    <p>Total Enrolled</p>
+                    <h3>{{ total_enrolled }}</h3>
+                </div>
+                <div class="kpi-icon">
+                    <i class="bi bi-person-check"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="kpi-card danger">
+            <div class="kpi-content">
+                <div>
+                    <p>On OJT</p>
+                    <h3>{{ on_ojt }}</h3>
+                </div>
+                <div class="kpi-icon">
+                    <i class="bi bi-briefcase"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- MAIN GRID -->
+<div class="row g-3">
+
+    <!-- LEFT (BAR CHARTS SMALLER WIDTH) -->
+    <div class="col-md-6 d-flex flex-column gap-3">
+
+        <div class="card p-3">
+            <h6>PIA Enrollment</h6>
+            <div class="chart-box">
+                <canvas id="barChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card p-3">
+            <h6>Taluka Distribution</h6>
+            <div class="chart-box">
+                <canvas id="talukaChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- RIGHT (SMALL PIE CHARTS) -->
+    <div class="col-md-6 d-flex flex-column justify-content-between">
+
+        <div class="row g-4">
+
+            <div class="col-md-5">
+                <div class="chart-card">
+                    <h6>Category</h6>
+                    <div class="pie-container">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="chart-card">
+                    <h6>Gender</h6>
+                    <div class="pie-container">
+                        <canvas id="genderChart" ></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="chart-card">
+                    <h6>Eligibility</h6>
+                    <div class="pie-container">
+                        <canvas id="eligibilityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5">
+                <div class="chart-card">
+                    <h6>Sector</h6>
+                    <div class="pie-container">
+                        <canvas id="sectorChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</div>
+<!-- CHAT PANEL -->
+<div id="chatbot-panel" style="
+position:fixed;
+right:0;
+top:0;
+width:350px;
+height:100vh;
+background:#fff;
+border-left:1px solid #ddd;
+display:none;
+flex-direction:column;
+z-index:999;">
+
+<div style="background:#4F46E5;color:white;padding:15px;">
+FAQ Assistant
+<span onclick="closeChat()" style="float:right;cursor:pointer;">❌</span>
+</div>
+
+<!-- SEARCH -->
+<input id="searchBox" placeholder="Search FAQ..." 
+style="padding:10px;border:none;border-bottom:1px solid #ddd;outline:none;">
+
+<!-- Suggestions -->
+<div id="suggestions"></div>
+
+<!-- Chat -->
+<div id="chat-box" style="flex:1;overflow:auto;padding:10px;"></div>
+
+<div style="display:flex;border-top:1px solid #ddd;">
+<input id="user-input" style="flex:1;padding:10px;border:none;">
+<button onclick="sendMessage()">➤</button>
+</div>
+
+</div>
+
+<!-- BUTTON -->
+<div onclick="openChat()" id="open-chat-btn" style="
+position:fixed;
+right:20px;
+bottom:20px;
+background:#4F46E5;
+color:white;
+padding:14px;
+border-radius:50%;
+cursor:pointer;">
+💬
+</div>
+<script>
+
+function viewDetails() {
+    let pia = document.querySelector("[name='pia_prn']").value;
+    if (!pia) return alert("Select PIA");
+    window.location.href = "/pia_details/" + pia;
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    const pieOptions = {
+        plugins:{
+            legend:{
+                position:'bottom',
+                labels:{ boxWidth:12, padding:10 }
+            }
+        }
+    };
+
+    new Chart(barChart, {
+        type:'bar',
+        data:{
+            labels: {{ bar_labels|tojson }},
+            datasets:[{
+                data: {{ bar_enrolled|tojson }},
+                backgroundColor:'#4e73df'
+            }]
+        },
+        options:{
+            responsive:true,
+            maintainAspectRatio:false,
+            plugins:{ legend:{ display:false } }
+        }
+    });
+
+    new Chart(talukaChart, {
+    type:'bar',
+    data:{
+        labels: {{ taluka_labels|tojson }},
+        datasets:[{
+            data: {{ taluka_counts|tojson }},
+            backgroundColor:'#36b9cc',
+            cursor: 'pointer'
+        }]
+    },
+    options:{
+        responsive:true,
+        maintainAspectRatio:false,
+
+        plugins:{
+            legend:{ display:false }
+        },
+
+        onClick: function(evt, elements) {
+            if (elements.length > 0) {
+                const index = elements[0].index;
+                const taluka = this.data.labels[index];
+
+                const pia = "{{ selected_pia or '' }}";
+
+                // 🔥 Redirect to candidates page with filters
+                window.location.href = `/candidates?taluka=${encodeURIComponent(taluka)}&pia_prn=${pia}`;
+            }
+        },
+
+        scales:{
+            y:{ beginAtZero:true }
+        }
+    }
+});
+    new Chart(categoryChart, {
+        type:'pie',
+        data:{
+            labels:['SC','ST','Others','Women','PwD'],
+            datasets:[{ data:[{{ sc_total }},{{ st_total }},{{ others_total }},{{ women_total }},{{ pwd_total }}] }]
+        },
+        options: pieOptions
+    });
+
+    new Chart(genderChart, {
+        type:'pie',
+        data:{
+            labels:['Male','Female'],
+            datasets:[{ data:[{{ male_total }},{{ female_total }}] }]
+        },
+        options: pieOptions
+    });
+
+    new Chart(eligibilityChart, {
+        type:'pie',
+        data:{
+            labels: {{ eligibility_labels|tojson }},
+            datasets:[{ data: {{ eligibility_counts|tojson }} }]
+        },
+        options: pieOptions
+    });
+
+    new Chart(sectorChart, {
+        type:'pie',
+        data:{
+            labels: {{ sector_labels|tojson }},
+            datasets:[{ data: {{ sector_values|tojson }} }]
+        },
+        options: pieOptions
+    });
+
+});
+</script>
+
+<script>
+// FAQ
+let FAQs = [];
+
+fetch('/get_faqs')
+.then(r=>r.json())
+.then(d=>FAQs=d);
+
+// 🔍 SEARCH AS YOU TYPE
+document.getElementById("searchBox").addEventListener("input", function(){
+    let val = this.value.toLowerCase();
+    let box = document.getElementById("suggestions");
+    box.innerHTML = "";
+
+    if(!val) return;
+
+    FAQs.filter(f=>f.q.toLowerCase().includes(val)).slice(0,5)
+    .forEach(f=>{
+        let div = document.createElement("div");
+        div.className = "suggestion";
+        div.innerText = f.q;
+        div.onclick = ()=>sendFAQ(f);
+        box.appendChild(div);
+    });
+});
+
+// Send FAQ
+function sendFAQ(faq){
+    document.getElementById("chat-box").innerHTML += 
+    `<div><b>You:</b> ${faq.q}</div>
+     <div style="color:#4F46E5;"><b>Bot:</b> ${faq.a}</div>`;
+}
+
+// Send Message
+function sendMessage(){
+    let input=document.getElementById("user-input");
+    let msg=input.value.toLowerCase();
+
+    let found=FAQs.find(f=>msg.includes(f.q.toLowerCase()));
+
+    document.getElementById("chat-box").innerHTML+=
+    `<div><b>You:</b> ${msg}</div>
+     <div style="color:#4F46E5;"><b>Bot:</b> ${found?found.a:"No answer found"}</div>`;
+
+    input.value="";
+}
+
+// Chat toggle
+function openChat(){
+    document.getElementById("chatbot-panel").style.display="flex";
+    document.getElementById("main-content").classList.add("chat-open");
+}
+function closeChat(){
+    document.getElementById("chatbot-panel").style.display="none";
+    document.getElementById("main-content").classList.remove("chat-open");
+}
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Candidate Form</title>
+
+```
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+    body { background-color: #f4f6f9; }
+    .card { border-radius: 12px; }
+</style>
+```
+
+</head>
+
+<body>
+
+<div class="container mt-5">
+
+<h2 class="text-center mb-4">Candidate Details</h2>
+
+{% if success %} <div class="alert alert-success text-center">{{ success }}</div>
+{% endif %}
+
+{% if error %} <div class="alert alert-danger text-center">{{ error }}</div>
+{% endif %}
+
+<div class="card shadow p-4">
+<form method="POST">
+
+```
+<!-- ✅ PIA -->
+<div class="mb-3">
+    <label>PIA</label>
+    <select name="pia_prn" id="pia" class="form-control" onchange="loadBatches()" required>
+        <option value="">Select PIA</option>
+        {% for p in pias %}
+            <option value="{{ p[0] }}">{{ p[1] }}</option>
+        {% endfor %}
+    </select>
+</div>
+
+<!-- ✅ Batch -->
+<div class="mb-3">
+    <label>Batch</label>
+    <select name="batch_code" id="batch" class="form-control" required>
+        <option value="">Select Batch</option>
+    </select>
+</div>
+
+<!-- Name -->
+<div class="mb-3">
+    <label>Name</label>
+    <input type="text" name="name" class="form-control" required>
+</div>
+
+<!-- Gender -->
+<div class="mb-3">
+    <label>Gender</label>
+    <select name="gender" class="form-control">
+        <option value="">Select</option>
+        <option>Male</option>
+        <option>Female</option>
+        <option>Other</option>
+    </select>
+</div>
+
+<!-- Identity -->
+<div class="mb-3">
+    <label>Identity Number</label>
+    <input type="text" name="identity_number" class="form-control">
+</div>
+
+<!-- Parents -->
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label>Father Name</label>
+        <input type="text" name="father_name" class="form-control">
+    </div>
+    <div class="col-md-6 mb-3">
+        <label>Mother Name</label>
+        <input type="text" name="mother_name" class="form-control">
+    </div>
+</div>
+
+<!-- Category -->
+<div class="mb-3">
+    <label>Category</label>
+    <select name="category" class="form-control">
+        <option value="">Select</option>
+        <option>SC</option>
+        <option>ST</option>
+        <option>OBC</option>
+        <option>General</option>
+    </select>
+</div>
+
+<!-- District -->
+<div class="mb-3">
+    <label>District</label>
+    <input type="text" name="district" class="form-control">
+</div>
+
+<!-- Addresses -->
+<div class="mb-3">
+    <label>Present Address</label>
+    <textarea name="present_address" class="form-control"></textarea>
+</div>
+
+<div class="mb-3">
+    <label>Permanent Address</label>
+    <textarea name="permanent_address" class="form-control"></textarea>
+</div>
+
+<!-- PWD -->
+<div class="mb-3">
+    <label>PWD Status</label>
+    <select name="pwd_status" class="form-control">
+        <option value="">Select</option>
+        <option>Y</option>
+        <option>N</option>
+    </select>
+</div>
+
+<!-- Contacts -->
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label>Contact</label>
+        <input type="text" name="contact_details" class="form-control">
+    </div>
+    <div class="col-md-6 mb-3">
+        <label>Alternate Contact</label>
+        <input type="text" name="alternate_contact" class="form-control">
+    </div>
+</div>
+
+<!-- Dates -->
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label>DOB</label>
+        <input type="date" name="dob" class="form-control">
+    </div>
+    <div class="col-md-6 mb-3">
+        <label>Enrollment Date</label>
+        <input type="date" name="enrollment_date" class="form-control">
+    </div>
+</div>
+
+<!-- ✅ Eligibility -->
+
+<div class="mb-3">
+    <label>Eligibility Criteria</label>
+    <select name="eligibility" id="eligibility" class="form-control" onchange="showUploadField()">
+        <option value="">Select</option>
+        <option value="bpl">BPL</option>
+        <option value="mgnrega">MGNREGA</option>
+        <option value="rsby">RSBY</option>
+        <option value="antyodaya">Antyodaya</option>
+        <option value="nrlm">NRLM</option>
+        <option value="pip">PIP</option>
+    </select>
+</div>
+
+<!-- ✅ Upload Section -->
+
+<div id="upload-section" style="display:none;">
+
+```
+<div id="bpl" class="upload-field mb-3" style="display:none;">
+    <label>Upload BPL Card</label>
+    <input type="file" name="bpl_card" class="form-control">
+</div>
+
+<div id="mgnrega" class="upload-field mb-3" style="display:none;">
+    <label>Upload MGNREGA Document</label>
+    <input type="file" name="mgnrega_doc" class="form-control">
+</div>
+
+<div id="rsby" class="upload-field mb-3" style="display:none;">
+    <label>Upload RSBY Card</label>
+    <input type="file" name="rsby_card" class="form-control">
+</div>
+
+<div id="antyodaya" class="upload-field mb-3" style="display:none;">
+    <label>Upload Antyodaya Proof</label>
+    <input type="file" name="antyodaya_doc" class="form-control">
+</div>
+
+<div id="nrlm" class="upload-field mb-3" style="display:none;">
+    <label>Upload NRLM Proof</label>
+    <input type="file" name="nrlm_doc" class="form-control">
+</div>
+
+<div id="pip" class="upload-field mb-3" style="display:none;">
+    <label>Upload PIP Document</label>
+    <input type="file" name="pip_doc" class="form-control">
+</div>
+```
+
+</div>
+
+<!-- ✅ JavaScript -->
+
+<script>
+function showUploadField() {
+    let value = document.getElementById("eligibility").value;
+    let section = document.getElementById("upload-section");
+    let fields = document.getElementsByClassName("upload-field");
+
+    // Hide all fields first
+    for (let i = 0; i < fields.length; i++) {
+        fields[i].style.display = "none";
+    }
+
+    // If nothing selected
+    if (value === "") {
+        section.style.display = "none";
+        return;
+    }
+
+    // Show section
+    section.style.display = "block";
+
+    // Show selected field
+    let selectedField = document.getElementById(value);
+    if (selectedField) {
+        selectedField.style.display = "block";
+    }
+}
+</script>
+
+
+<!-- Job Role -->
+<div class="mb-3">
+    <label>Job Role</label>
+    <input type="text" name="job_role" class="form-control">
+</div>
+
+<button type="submit" class="btn btn-primary">Save Candidate</button>
+```
+
+</form>
+</div>
+</div>
+
+<!-- ✅ JS -->
+
+<script>
+function loadBatches() {
+    let piaId = document.getElementById("pia").value;
+    let batchDropdown = document.getElementById("batch");
+
+    if (!piaId) {
+        batchDropdown.innerHTML = '<option value="">Select Batch</option>';
+        return;
+    }
+
+    batchDropdown.innerHTML = '<option>Loading...</option>';
+
+    fetch('/get_batches/' + piaId)
+        .then(response => response.json())
+        .then(data => {
+            console.log("Batches:", data); // DEBUG
+
+            batchDropdown.innerHTML = '<option value="">Select Batch</option>';
+
+            data.forEach(batch => {
+                let option = document.createElement("option");
+                option.value = batch;
+                option.text = batch;
+                batchDropdown.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            batchDropdown.innerHTML = '<option>Error loading batches</option>';
+        });
+}
+</script>
+
+<!-- ✅ Back to Dashboard Button -->
+<div class="text-center mt-4">
+    <a href="/dashboard" class="btn btn-secondary">
+        ⬅ Back to Dashboard
+    </a>
+</div>
+
+</body>
+</html>

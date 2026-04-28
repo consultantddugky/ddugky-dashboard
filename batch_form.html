@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Add Batch</title>
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body { background-color: #f4f6f9; }
+.card { border-radius: 12px; }
+</style>
+
+</head>
+
+<body>
+
+<div class="container mt-5">
+<h2 class="text-center mb-4">Batch Details</h2>
+
+{% if success %}
+
+<div class="alert alert-success text-center">{{ success }}</div>
+{% endif %}
+
+{% if error %}
+
+<div class="alert alert-danger text-center">{{ error }}</div>
+{% endif %}
+
+<div class="card shadow p-4">
+<form method="POST">
+
+<!-- PIA -->
+
+<div class="mb-3">
+<label>Select PIA</label>
+<select name="pia_prn" id="pia_select" class="form-control" required>
+<option value="">-- Select PIA --</option>
+{% for pia in pias %}
+<option value="{{ pia[0] }}">{{ pia[1] }}</option>
+{% endfor %}
+</select>
+</div>
+
+<!-- Batch + Job -->
+
+
+<div class="col-md-6 mb-3">
+<label>Batch Code</label>
+<input type="text" name="batch_code" class="form-control" required>
+</div>
+
+<div class="col-md-6 mb-3">
+<label>Job Role</label>
+<input type="text" id="job_role" name="job_role" class="form-control" required>
+</div>
+</div>
+
+<!-- Male / Female -->
+
+
+<div class="col-md-6 mb-3">
+<label>Male Candidates</label>
+<input type="number" name="male_count" class="form-control" oninput="calculateTotal()">
+</div>
+
+<div class="col-md-6 mb-3">
+<label>Female Candidates</label>
+<input type="number" name="female_count" class="form-control" oninput="calculateTotal()">
+</div>
+</div>
+
+<div class="col-md-6 mb-3">
+<label>SC</label>
+<input type="int" name="sc_count" class="form-control" required>
+</div>
+
+<div class="col-md-6 mb-3">
+<label>ST</label>
+<input type="int" name="sT_count" class="form-control" required>
+</div>
+
+<div class="col-md-6 mb-3">
+<label>OBC</label>
+<input type="int" name="obc_count" class="form-control" required>
+</div>
+
+
+<!-- Duration -->
+
+
+<div class="col-md-6 mb-3">
+<label>Total Duration (Hours)</label>
+<input type="number" id="total_duration" name="total_duration" class="form-control" oninput="calculateOJT()">
+</div>
+
+<div class="col-md-6 mb-3">
+<label>OJT Duration (Hours)</label>
+<input type="number" id="ojt_duration" name="ojt_duration" class="form-control" oninput="calculateOJT()">
+</div>
+</div>
+
+<!-- Dates -->
+
+
+<div class="col-md-6 mb-3">
+<label>Start Date</label>
+<input type="date" name="start_date" class="form-control"
+onchange="calculateFreezeDate(); calculateOJT()" required>
+</div>
+
+<div class="col-md-6 mb-3">
+<label>Freeze Date</label>
+<input type="date" name="freeze_date" class="form-control" readonly>
+</div>
+</div>
+
+<!-- OJT Dates -->
+
+
+<div class="col-md-6 mb-3">
+<label>OJT Start Date</label>
+<input type="date" name="ojt_start_date" class="form-control" readonly>
+</div>
+
+<div class="col-md-6 mb-3">
+<label>OJT End Date</label>
+<input type="date" name="ojt_end_date" class="form-control" readonly>
+</div>
+</div>
+
+<!-- Candidates -->
+
+
+<div class="col-md-3 mb-3">
+<label>Total Enrolled</label>
+<input type="number" name="total_enrolled" class="form-control" readonly>
+</div>
+
+<div class="col-md-3 mb-3">
+<label>Candidates Ongoing</label>
+<input type="number" name="candidates_ongoing" class="form-control" readonly>
+</div>
+
+<div class="col-md-3 mb-3">
+<label>OJT Ongoing</label>
+<input type="number" name="ojt_ongoing_candidates" class="form-control" readonly>
+</div>
+
+<div class="col-md-3 mb-3">
+<label>OJT Completed</label>
+<input type="number" name="ojt_completed_candidates" class="form-control" readonly>
+</div>
+</div>
+
+<button type="submit" class="btn btn-primary w-100">Save Batch</button>
+
+</form>
+</div>
+</div>
+
+<script>
+
+// 🔹 AUTO-FILL FROM SANCTION ORDER
+document.getElementById("pia_select").addEventListener("change", function () {
+
+    let pia_prn = this.value;
+
+    if (!pia_prn) return;
+
+    fetch(`/get_sanction_by_pia/${pia_prn}`)
+        .then(res => res.json())
+        .then(data => {
+
+            document.getElementById("job_role").value = data.job_role || "";
+            document.getElementById("total_duration").value = data.total_duration || "";
+            document.getElementById("ojt_duration").value = data.ojt_duration || "";
+
+            // trigger calculations
+            calculateOJT();
+
+        })
+        .catch(err => console.log("Error:", err));
+});
+
+// Freeze Date
+function calculateFreezeDate() {
+let startDate = document.querySelector('[name="start_date"]').value;
+if (!startDate) return;
+
+let d = new Date(startDate);
+d.setDate(d.getDate() + 9);
+document.querySelector('[name="freeze_date"]').value = d.toISOString().split('T')[0];
+}
+
+// Total = Male + Female
+function calculateTotal() {
+let male = parseInt(document.querySelector('[name="male_count"]').value) || 0;
+let female = parseInt(document.querySelector('[name="female_count"]').value) || 0;
+
+let total = male + female;
+document.querySelector('[name="total_enrolled"]').value = total;
+
+calculateCandidates();
+}
+
+// OJT calculation
+function calculateOJT() {
+let start = document.querySelector('[name="start_date"]').value;
+let totalHrs = parseInt(document.getElementById("total_duration").value) || 0;
+let ojtHrs = parseInt(document.getElementById("ojt_duration").value) || 0;
+
+if (!start || totalHrs === 0) return;
+
+const HOURS = 8;
+
+let totalDays = Math.floor(totalHrs / HOURS);
+let ojtDays = Math.floor(ojtHrs / HOURS);
+
+let s = new Date(start);
+
+let end = new Date(s);
+end.setDate(end.getDate() + totalDays);
+
+let ojtStart = new Date(end);
+ojtStart.setDate(ojtStart.getDate() - ojtDays);
+
+document.querySelector('[name="ojt_start_date"]').value = ojtStart.toISOString().split('T')[0];
+document.querySelector('[name="ojt_end_date"]').value = end.toISOString().split('T')[0];
+
+calculateCandidates();
+}
+
+// Candidate status logic
+function calculateCandidates() {
+let total = parseInt(document.querySelector('[name="total_enrolled"]').value) || 0;
+
+let ojtStartVal = document.querySelector('[name="ojt_start_date"]').value;
+let ojtEndVal = document.querySelector('[name="ojt_end_date"]').value;
+
+if (!ojtStartVal || !ojtEndVal || total === 0) return;
+
+let today = new Date();
+let start = new Date(ojtStartVal);
+let end = new Date(ojtEndVal);
+
+let ongoing = document.querySelector('[name="candidates_ongoing"]');
+let ojtOngoing = document.querySelector('[name="ojt_ongoing_candidates"]');
+let completed = document.querySelector('[name="ojt_completed_candidates"]');
+
+// BEFORE OJT
+if (today < start) {
+ongoing.value = total;
+ojtOngoing.value = 0;
+completed.value = 0;
+}
+
+// DURING OJT
+else if (today >= start && today <= end) {
+ongoing.value = total;
+ojtOngoing.value = total;
+completed.value = 0;
+}
+
+// AFTER OJT
+else {
+ongoing.value = 0;
+ojtOngoing.value = 0;
+completed.value = total;
+}
+}
+
+</script>
+
+</body>
+</html>

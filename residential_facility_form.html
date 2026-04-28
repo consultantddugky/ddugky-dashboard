@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Residential Facility</title>
+
+```
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+    body { background-color: #f4f6f9; }
+    .card { border-radius: 12px; }
+</style>
+```
+
+</head>
+<body>
+
+<div class="container mt-5">
+
+```
+<h2 class="text-center mb-4">Residential Facility Details</h2>
+
+<!-- Messages -->
+{% if success %}
+    <div class="alert alert-success text-center">{{ success }}</div>
+{% endif %}
+
+{% if error %}
+    <div class="alert alert-danger text-center">{{ error }}</div>
+{% endif %}
+
+<div class="card shadow p-4">
+    <form method="POST">
+
+        <!-- Training Centre Dropdown -->
+        <div class="mb-3">
+            <label class="form-label">Select Training Centre</label>
+            <select name="centre_id" class="form-control" required>
+                <option value="">-- Select Centre --</option>
+                {% for centre in centres %}
+                    <option value="{{ centre[0] }}">{{ centre[1] }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Capacity -->
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label>Male Capacity</label>
+                <input type="number" name="male_capacity" class="form-control" required>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <label>Female Capacity</label>
+                <input type="number" name="female_capacity" class="form-control" required>
+            </div>
+        </div>
+
+        <!-- Note -->
+        <div class="alert alert-info">
+            Total capacity will be calculated automatically.
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-between">
+            <a href="/dashboard" class="btn btn-secondary">Back</a>
+            <button type="submit" class="btn btn-primary">Save Facility</button>
+        </div>
+
+    </form>
+</div>
+```
+
+</div>
+
+</body>
+</html>

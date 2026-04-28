@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Batch</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+        }
+
+        .container {
+            padding: 30px;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        .box {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 6px 0 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .btn {
+            padding: 10px 14px;
+            border-radius: 6px;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+
+        .btn-update {
+            background: #2ecc71;
+        }
+
+        .btn-back {
+            background: #3498db;
+            text-decoration: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            color: white;
+        }
+
+        .btn-update:hover { background: #27ae60; }
+        .btn-back:hover { background: #2c80b4; }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- ✅ BACK BUTTON (SAFE) -->
+    <a href="/pia-details?pia_id={{ pia_id }}" class="btn-back">⬅ Back</a>
+
+    <div class="box">
+        <h2>Edit Batch</h2>
+
+        <form method="POST" action="/update-batch">
+
+            <!-- ✅ Hidden IDs (FIXED) -->
+            <input type="hidden" name="batch_id" value="{{ batch[0] }}">
+            <input type="hidden" name="pia_id" value="{{ pia_id }}">
+
+            <label>Batch Number</label>
+            <input type="text" name="batch_number" value="{{ batch[1] }}" required>
+
+            <label>State</label>
+            <input type="text" name="state" value="{{ batch[2] }}" required>
+
+            <label>Registration Date</label>
+            <input type="date" name="registration_date" value="{{ batch[3] }}" required>
+
+            <label>Training Duration (days)</label>
+            <input type="number" name="training_duration" value="{{ batch[4] }}" required>
+
+            <button type="submit" class="btn btn-update">Update Batch</button>
+
+        </form>
+    </div>
+
+</div>
+
+</body>
+</html>

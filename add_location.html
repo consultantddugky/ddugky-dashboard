@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Location</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background: #f5f7fb;
+        }
+        .card {
+            border-radius: 12px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container mt-5">
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+
+            <form method="POST" action="/add_location" class="card p-4">
+
+                <h5 class="mb-3 text-center">Add Location Details</h5>
+
+                <div class="row g-3">
+
+                    <!-- PIA -->
+                    <div class="col-md-6">
+                        <label class="form-label">Select PIA</label>
+                        <select name="pia_prn" class="form-select" required>
+                            <option value="">-- Select PIA --</option>
+                            {% for pia in pias %}
+                            <option value="{{ pia[0] }}">{{ pia[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Batch Code -->
+                    <div class="col-md-6">
+                        <label class="form-label">Batch Code</label>
+                        <input type="text" name="batch_code"
+                               class="form-control"
+                               placeholder="Enter Batch Code"
+                               required>
+                    </div>
+
+                    <!-- State -->
+                    <div class="col-md-6">
+                        <label class="form-label">State</label>
+                        <input list="stateList" name="state" id="state"
+                               class="form-control"
+                               placeholder="Enter State"
+                               required>
+
+                        <datalist id="stateList">
+                            <option value="Goa">
+                            <option value="Maharashtra">
+                            <option value="Karnataka">
+                            <option value="Gujarat">
+                            <option value="Delhi">
+                        </datalist>
+                    </div>
+
+                    <!-- District -->
+                    <div class="col-md-6">
+                        <label class="form-label">District</label>
+                        <input type="text" name="district" id="district"
+                               class="form-control"
+                               placeholder="Enter District"
+                               required>
+                    </div>
+
+                    <!-- Block -->
+                    <div class="col-md-6">
+                        <label class="form-label">Block Name</label>
+                        <input type="text" name="block_name"
+                               class="form-control"
+                               placeholder="Enter Block"
+                               required>
+                    </div>
+
+                    <!-- Candidates -->
+                    <div class="col-md-6">
+                        <label class="form-label">Candidates</label>
+                        <input type="number" name="candidates"
+                               class="form-control"
+                               min="1"
+                               required>
+                    </div>
+
+                    <!-- Submit -->
+                    <div class="col-md-12 text-end">
+                        <button type="submit" class="btn btn-success">Save</button>
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+
+<!-- JS -->
+<script>
+// Format text properly
+function formatText(value) {
+    return value
+        .trim()
+        .toLowerCase()
+        .replace(/\b\w/g, c => c.toUpperCase());
+}
+
+document.getElementById("state").addEventListener("blur", function () {
+    this.value = formatText(this.value);
+});
+
+document.getElementById("district").addEventListener("blur", function () {
+    this.value = formatText(this.value);
+});
+</script>
+
+</body>
+</html>

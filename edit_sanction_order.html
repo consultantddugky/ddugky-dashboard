@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Sanction Order</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f4f6f9;
+        }
+        .card {
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+
+    <h2 class="text-center mb-4">Edit Sanction Order</h2>
+
+    <div class="card shadow p-4">
+
+        <form method="POST">
+
+            <!-- Sanction Order No (Read-only) -->
+            <div class="mb-3">
+                <label>Sanction Order No.</label>
+                <input type="text" class="form-control" 
+                       value="{{ order[9] }}" readonly>
+            </div>
+
+            <!-- Job Role -->
+            <div class="mb-3">
+                <label>Job Role</label>
+                <input type="text" name="job_role" class="form-control"
+                       value="{{ order[1] }}" required>
+            </div>
+
+            <!-- Total Target -->
+            <div class="mb-3">
+                <label>Total Target</label>
+                <input type="number" name="total_target" class="form-control"
+                       value="{{ order[2] }}" required>
+            </div>
+
+            <!-- Category Targets -->
+            <h5 class="mt-4">Category Targets</h5>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <label>SC</label>
+                    <input type="number" name="sc_target" class="form-control"
+                           value="{{ order[3] }}">
+                </div>
+                <div class="col-md-4">
+                    <label>ST</label>
+                    <input type="number" name="st_target" class="form-control"
+                           value="{{ order[4] }}">
+                </div>
+                <div class="col-md-4">
+                    <label>Others</label>
+                    <input type="number" name="others_target" class="form-control"
+                           value="{{ order[5] }}">
+                </div>
+            </div>
+
+            <!-- Special Targets -->
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label>Women Target</label>
+                    <input type="number" name="women_target" class="form-control"
+                           value="{{ order[6] }}">
+                </div>
+                <div class="col-md-6">
+                    <label>PwD Target</label>
+                    <input type="number" name="pwd_target" class="form-control"
+                           value="{{ order[7] }}">
+                </div>
+            </div>
+
+            <!-- Training Type -->
+            <div class="mb-3 mt-3">
+                <label>Nature of Training</label>
+                <select name="r_nr" class="form-control" required>
+                    <option value="Residential" 
+                        {% if order[8] == 'Residential' %}selected{% endif %}>
+                        Residential
+                    </option>
+                    <option value="Non-Residential" 
+                        {% if order[8] == 'Non-Residential' %}selected{% endif %}>
+                        Non-Residential
+                    </option>
+                </select>
+            </div>
+
+            <!-- Buttons -->
+            <div class="d-flex justify-content-between mt-4">
+                <a href="/view_sanction_orders" class="btn btn-secondary">Back</a>
+                <button type="submit" class="btn btn-success">Update</button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+</body>
+</html>

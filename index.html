@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PIA → Batches</title>
+</head>
+<body>
+
+    <h2>Select PIA</h2>
+
+    <!-- PIA Dropdown -->
+    <select id="piaDropdown">
+        <option value="">-- Select PIA --</option>
+        {% for pia in pia_list %}
+            <option value="{{ pia[0] }}">{{ pia[1] }}</option>
+        {% endfor %}
+    </select>
+
+    <h2>Batches</h2>
+    <ul id="batchList"></ul>
+
+    <script>
+        document.getElementById("piaDropdown").addEventListener("change", function() {
+            let piaId = this.value;
+
+            let batchList = document.getElementById("batchList");
+            batchList.innerHTML = "";
+
+            if (piaId === "") return;
+
+            fetch(`/get_batches/${piaId}`)
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(batch => {
+                        let li = document.createElement("li");
+                        li.textContent = batch.name;
+                        batchList.appendChild(li);
+                    });
+                });
+        });
+    </script>
+
+</body>
+</html>
